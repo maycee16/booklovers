@@ -17,7 +17,7 @@ import com.booklovers.booklovers.Entity.Users;
 import com.booklovers.booklovers.Services.UsersService;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 public class UsersController {
 
     private final UsersService usersService;
@@ -25,8 +25,8 @@ public class UsersController {
     public UsersController(UsersService usersService) {
         this.usersService = usersService;
     }
-
-    @PostMapping
+//open api to create user
+    @PostMapping("/open/users")
     public ResponseEntity<Users> createUser(@RequestBody Users user) {
         Users created = usersService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);

@@ -42,8 +42,7 @@ public class Config {
                         "/api/open/**",
                         "/api/**",
                         "/v2/**",
-                        "/app**/",
-
+ 
 
                         "/api/auth/**",
                                                 "/ws/**",
