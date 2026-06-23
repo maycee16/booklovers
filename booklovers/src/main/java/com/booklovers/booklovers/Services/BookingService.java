@@ -1,129 +1,63 @@
 package com.booklovers.booklovers.Services;
 
-
-import java.time.LocalDateTime;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
+ 
+import com.booklovers.booklovers.DTO.BookStatus;
+import com.booklovers.booklovers.DTO.BookingStatus;
+import com.booklovers.booklovers.Entity.Book;
+import com.booklovers.booklovers.Entity.Booking;
+import com.booklovers.booklovers.Entity.Users;
+import com.booklovers.booklovers.Repository.BookRepository;
+import com.booklovers.booklovers.Repository.BookingRepository;
+import com.booklovers.booklovers.Repository.UsersRepository;
 import org.springframework.stereotype.Service;
 
-import com.booklovers.booklovers.DTO.ApiResponse;
-import com.booklovers.booklovers.DTO.BookingRequest;
-import com.booklovers.booklovers.Entity.BookStatus;
-import com.booklovers.booklovers.Entity.Booking;
-import com.booklovers.booklovers.Entity.BookingStatus;
-import com.booklovers.booklovers.Entity.Books;
-import com.booklovers.booklovers.Entity.Users;
-import com.booklovers.booklovers.Repository.BookingRepository;
-import com.booklovers.booklovers.Repository.BooksRepository;
-import com.booklovers.booklovers.Repository.UsersRepository;
+import java.time.LocalDateTime;
 
 @Service
 public class BookingService {
 
-    @Autowired
-    private BookingRepository bookingRepository;
+    private final BookingRepository bookingRepository;
+    private final BookRepository bookRepository;
+    private final UsersRepository usersRepository;
 
-    @Autowired
-    private BooksRepository booksRepository;
+    public BookingService(
+            BookingRepository bookingRepository,
+            BookRepository bookRepository,
+            UsersRepository usersRepository
+    ) {
+        this.bookingRepository = bookingRepository;
+        this.bookRepository = bookRepository;
+        this.usersRepository = usersRepository;
+    }
 
-    @Autowired
-    private UsersRepository usersRepository;
+    public Booking requestBook(Long userId, Long bookId) {
 
-    // CREATE BOOKING
-    public ApiResponse<Booking> createBooking(BookingRequest request) {
+        Users borrower = usersRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Users user = usersRepository.findById(request.getUserId()).orElse(null);
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new RuntimeException("Book not found"));
 
-        if (user == null) {
-            return new ApiResponse<>(false, "User not found", null);
+        // Cannot borrow your own book
+        if (book.getUser().getId().equals(userId)) {
+            throw new RuntimeException("You cannot request your own book");
         }
 
-        Books book = booksRepository.findById(request.getBookId()).orElse(null);
-
-        if (book == null) {
-            return new ApiResponse<>(false, "Book not found", null);
-        }
-
+        // Must be available
         if (book.getStatus() != BookStatus.AVAILABLE) {
-            return new ApiResponse<>(false, "Book is not available", null);
+            throw new RuntimeException("Book is not available");
         }
 
         Booking booking = new Booking();
-        booking.setUser(user);
+        booking.setBorrower(borrower);
         booking.setBook(book);
         booking.setBookingDate(LocalDateTime.now());
-        booking.setBookingStatus(BookingStatus.PENDING);
+        booking.setStatus(BookingStatus.PENDING);
 
-        Booking saved = bookingRepository.save(booking);
+        // Reserve book
+        book.setStatus(BookStatus.RESERVED);
+        bookRepository.save(book);
 
-        return new ApiResponse<>(true, "Booking request sent", saved);
-    }
-
-    // GET ALL BOOKINGS
-    public ApiResponse<List<Booking>> getAllBookings() {
-
-        return new ApiResponse<>(
-                true,
-                "Bookings retrieved successfully",
-                bookingRepository.findAll());
-    }
-
-    // GET BOOKING BY ID
-    public ApiResponse<Booking> getBooking(Long id) {
-
-        return bookingRepository.findById(id)
-                .map(b -> new ApiResponse<>(true, "Booking found", b))
-                .orElse(new ApiResponse<>(false, "Booking not found", null));
-    }
-
-    // APPROVE BOOKING
-    public ApiResponse<Booking> approveBooking(Long id) {
-
-        Booking booking = bookingRepository.findById(id).orElse(null);
-
-        if (booking == null) {
-            return new ApiResponse<>(false, "Booking not found", null);
-        }
-
-        booking.setBookingStatus(BookingStatus.APPROVED);
-
-        Books book = booking.getBook();
-        book.setStatus(BookStatus.BOOKED);
-
-        booksRepository.save(book);
-
-        bookingRepository.save(booking);
-
-        return new ApiResponse<>(true, "Booking approved", booking);
-    }
-
-    // REJECT BOOKING
-    public ApiResponse<Booking> rejectBooking(Long id) {
-
-        Booking booking = bookingRepository.findById(id).orElse(null);
-
-        if (booking == null) {
-            return new ApiResponse<>(false, "Booking not found", null);
-        }
-
-        booking.setBookingStatus(BookingStatus.REJECTED);
-
-        bookingRepository.save(booking);
-
-        return new ApiResponse<>(true, "Booking rejected", booking);
-    }
-
-    // DELETE BOOKING
-    public ApiResponse<String> deleteBooking(Long id) {
-
-        if (!bookingRepository.existsById(id)) {
-
-            return new ApiResponse<>(false, "Booking not found", null);
-        }
-
-        bookingRepository.deleteById(id);
-
-        return new ApiResponse<>(true, "Booking deleted", null);
+        return bookingRepository.save(booking);
     }
 }

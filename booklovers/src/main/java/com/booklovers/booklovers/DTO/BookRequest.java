@@ -1,21 +1,12 @@
 package com.booklovers.booklovers.DTO;
 
  
-import org.springframework.web.multipart.MultipartFile;
+import lombok.Data;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
+@Data
 public class BookRequest {
 
-    private String bookName;
-    private String description;
+    private String title;
     private String author;
-    private String genre;
-    private String status;
-    private Long userId;
-    
-    private MultipartFile image;
+    private String description;
 }
