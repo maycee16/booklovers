@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.booklovers.booklovers.DTO.ApiResponse;
 import com.booklovers.booklovers.DTO.BookingRequest;
-import com.booklovers.booklovers.Entity.BookStatus;
 import com.booklovers.booklovers.Entity.Booking;
 import com.booklovers.booklovers.Entity.BookingStatus;
 import com.booklovers.booklovers.Entity.Books;
@@ -45,7 +44,7 @@ public class BookingService {
             return new ApiResponse<>(false, "Book not found", null);
         }
 
-        if (book.getStatus() != BookStatus.AVAILABLE) {
+        if (book.getStatus() != BookingStatus.AVAILABLE) {
             return new ApiResponse<>(false, "Book is not available", null);
         }
 
