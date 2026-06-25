@@ -42,5 +42,5 @@ private String resetOtp;
 @Column(name = "otp_expiry")
 private LocalDateTime otpExpiry;
 
-    // Constructors
+    
 }

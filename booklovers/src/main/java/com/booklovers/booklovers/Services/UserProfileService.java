@@ -12,10 +12,15 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class UserProfileService {
 
+
+
+
     private final UserProfileRepository userProfileRepository;
     private final UsersRepository userRepository;
     private final CloudinaryService cloudinaryService;
 
+
+ 
     public UserProfileService(
             UserProfileRepository userProfileRepository,
             UsersRepository userRepository,
@@ -27,6 +32,9 @@ public class UserProfileService {
         this.cloudinaryService = cloudinaryService;
     }
 
+
+
+    
     public UserProfile createProfile(
             Long userId,
             MultipartFile profilePicture,
