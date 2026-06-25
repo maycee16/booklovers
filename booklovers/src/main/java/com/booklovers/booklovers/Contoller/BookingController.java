@@ -1,88 +1,17 @@
 package com.booklovers.booklovers.Contoller;
 
-<<<<<<< HEAD
+import com.booklovers.booklovers.DTO.ApiResponse;
+import com.booklovers.booklovers.DTO.BookingStatus;
+import com.booklovers.booklovers.Entity.Booking;
+import com.booklovers.booklovers.Services.BookingService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import com.booklovers.booklovers.DTO.ApiResponse;
-import com.booklovers.booklovers.DTO.BookingRequest;
-import com.booklovers.booklovers.Entity.Booking;
-import com.booklovers.booklovers.Services.BookingService;
-
-@RestController
-@RequestMapping("/api/bookings")
-@CrossOrigin("*")
-public class BookingController {
-
-    @Autowired
-    private BookingService bookingService;
-
-    // CREATE BOOKING
-    @PostMapping
-    public ResponseEntity<ApiResponse<Booking>> createBooking(
-            @RequestBody BookingRequest request) {
-
-        return ResponseEntity.ok(
-                bookingService.createBooking(request));
-    }
-
-    // GET ALL BOOKINGS
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<Booking>>> getAllBookings() {
-
-        return ResponseEntity.ok(
-                bookingService.getAllBookings());
-    }
-
-    // GET BOOKING BY ID
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Booking>> getBooking(
-            @PathVariable Long id) {
-
-        return ResponseEntity.ok(
-                bookingService.getBooking(id));
-    }
-
-    // APPROVE BOOKING
-    @PutMapping("/{id}/approve")
-    public ResponseEntity<ApiResponse<Booking>> approveBooking(
-            @PathVariable Long id) {
-
-        return ResponseEntity.ok(
-                bookingService.approveBooking(id));
-    }
-
-    // REJECT BOOKING
-    @PutMapping("/{id}/reject")
-    public ResponseEntity<ApiResponse<Booking>> rejectBooking(
-            @PathVariable Long id) {
-
-        return ResponseEntity.ok(
-                bookingService.rejectBooking(id));
-    }
-
-    // DELETE BOOKING
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<String>> deleteBooking(
-            @PathVariable Long id) {
-
-        return ResponseEntity.ok(
-                bookingService.deleteBooking(id));
-    }
-}
-=======
- 
-import com.booklovers.booklovers.Entity.Booking;
-import com.booklovers.booklovers.Services.BookingService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 @RestController
 @RequestMapping("/api/open/bookings")
+@CrossOrigin("*")
 public class BookingController {
 
     private final BookingService bookingService;
@@ -92,13 +21,127 @@ public class BookingController {
     }
 
     @PostMapping("/book/{bookId}/user/{userId}")
-    public ResponseEntity<Booking> requestBook(
+    public ResponseEntity<ApiResponse<Booking>> requestBook(
             @PathVariable Long bookId,
             @PathVariable Long userId) {
 
         Booking booking = bookingService.requestBook(userId, bookId);
 
-        return ResponseEntity.ok(booking);
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        true,
+                        "Book requested successfully",
+                        booking
+                )
+        );
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<Booking>>> getAllBookings() {
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        true,
+                        "Bookings retrieved successfully",
+                        bookingService.getAllBookings()
+                )
+        );
+    }
+
+    @GetMapping("/{bookingId}")
+    public ResponseEntity<ApiResponse<Booking>> getBookingById(
+            @PathVariable Long bookingId) {
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        true,
+                        "Booking retrieved successfully",
+                        bookingService.getBookingById(bookingId)
+                )
+        );
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<ApiResponse<List<Booking>>> getBookingsByUser(
+            @PathVariable Long userId) {
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        true,
+                        "User bookings retrieved successfully",
+                        bookingService.getBookingsByUser(userId)
+                )
+        );
+    }
+
+    @PutMapping("/{bookingId}/approve")
+    public ResponseEntity<ApiResponse<Booking>> approveBooking(
+            @PathVariable Long bookingId) {
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        true,
+                        "Booking approved successfully",
+                        bookingService.approveBooking(bookingId)
+                )
+        );
+    }
+
+    @PutMapping("/{bookingId}/reject")
+    public ResponseEntity<ApiResponse<Booking>> rejectBooking(
+            @PathVariable Long bookingId) {
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        true,
+                        "Booking rejected successfully",
+                        bookingService.rejectBooking(bookingId)
+                )
+        );
+    }
+
+    @PutMapping("/{bookingId}/return")
+    public ResponseEntity<ApiResponse<Booking>> returnBook(
+            @PathVariable Long bookingId) {
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        true,
+                        "Book returned successfully",
+                        bookingService.returnBook(bookingId)
+                )
+        );
+    }
+
+    @PutMapping("/{bookingId}/status")
+    public ResponseEntity<ApiResponse<Booking>> updateStatus(
+            @PathVariable Long bookingId,
+            @RequestParam BookingStatus status) {
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        true,
+                        "Booking status updated successfully",
+                        bookingService.updateBookingStatus(
+                                bookingId,
+                                status
+                        )
+                )
+        );
+    }
+
+    @DeleteMapping("/{bookingId}")
+    public ResponseEntity<ApiResponse<Void>> deleteBooking(
+            @PathVariable Long bookingId) {
+
+        bookingService.deleteBooking(bookingId);
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        true,
+                        "Booking deleted successfully",
+                        null
+                )
+        );
     }
 }
->>>>>>> 074ae1688ada59d8ed50fbc10150e06db15a3459
