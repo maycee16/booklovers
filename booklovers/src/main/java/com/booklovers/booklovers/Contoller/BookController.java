@@ -43,10 +43,13 @@ public class BookController {
 
         return ResponseEntity.ok(savedBook);
     }
-  @GetMapping
-    public ResponseEntity<List<Book>> getAllBooks() {
-        return ResponseEntity.ok(bookService.getAllBooks());
-    }
+
+@GetMapping
+public ResponseEntity<List<Book>> getAllBooks() {
+    return ResponseEntity.ok(bookService.getAllBooks());
+}
+
+   
 
     // GET BOOK BY ID
     @GetMapping("/{bookId}")

@@ -33,4 +33,5 @@ public class Book {
 
 @Enumerated(EnumType.STRING)
 @Column(nullable = false)
-private BookStatus status;}
+private BookStatus status;
+}

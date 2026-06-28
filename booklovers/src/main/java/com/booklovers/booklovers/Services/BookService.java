@@ -3,6 +3,7 @@ package com.booklovers.booklovers.Services;
 import com.booklovers.booklovers.Cloudinary.CloudinaryService;
 import com.booklovers.booklovers.DTO.BookStatus;
 import com.booklovers.booklovers.Entity.Book;
+import com.booklovers.booklovers.Entity.Booking;
 import com.booklovers.booklovers.Entity.Users;
 import com.booklovers.booklovers.Repository.BookRepository;
 import com.booklovers.booklovers.Repository.UsersRepository;
@@ -55,9 +56,9 @@ public class BookService {
 
         return bookRepository.save(book);
     }
- public List<Book> getAllBooks() {
-        return bookRepository.findAll();
-    }
+ 
+
+
 
     public Book getBookById(Long id) {
         return bookRepository.findById(id)
@@ -114,4 +115,11 @@ public class BookService {
         Book book = getBookById(id);
         bookRepository.delete(book);
     }
+
+
+
+   // READ ALL BOOKS
+public List<Book> getAllBooks() {
+    return bookRepository.findAll();
+}
 }
