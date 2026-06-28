@@ -1,34 +1,13 @@
-# ==========================
-# Stage 1: Build the project
-# ==========================
-FROM maven:3.9-eclipse-temurin-21 AS build
+ 
 
-WORKDIR /app
 
-# Copy pom.xml first for dependency caching
-COPY pom.xml .
 
-# Download dependencies
-RUN mvn dependency:go-offline
+ FROM eclipse-temurin:21-jdk-alpine
 
-# Copy source code
-COPY src ./src
+ WORKDIR /app
 
-# Build the application
-RUN mvn clean package -DskipTests
+ COPY target/booklovers-0.0.1-SNAPSHOT.jar app.jar
 
-# ==========================
-# Stage 2: Run the application
-# ==========================
-FROM eclipse-temurin:21-jre-alpine
+ EXPOSE 8080
 
-WORKDIR /app
-
-# Copy the generated JAR
-COPY --from=build /app/target/booklovers-0.0.1-SNAPSHOT.jar app.jar
-
-# Expose Spring Boot port
-EXPOSE 8080
-
-# Start the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ ENTRYPOINT ["java", "-jar", "app.jar"]
