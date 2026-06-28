@@ -1,12 +1,15 @@
+# ==========================
+# Stage 1: Build the project
+# ==========================
 FROM maven:3.9-eclipse-temurin-21 AS build
 
 WORKDIR /app
 
-# Copy only pom.xml first to leverage dependency caching
+# Copy pom.xml first for dependency caching
 COPY pom.xml .
 
-# Pre-fetch dependencies (cached if pom.xml unchanged) 
-RUN mvn -B dependency:resolve dependency:resolve-plugins
+# Download dependencies
+RUN mvn dependency:go-offline
 
 # Copy source code
 COPY src ./src
@@ -14,14 +17,18 @@ COPY src ./src
 # Build the application
 RUN mvn clean package -DskipTests
 
-# Step 2: Run the application
+# ==========================
+# Stage 2: Run the application
+# ==========================
 FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
-# Copy the built jar from the build stage
-COPY --from=build /app/target/*.jar app.jar
+# Copy the generated JAR
+COPY --from=build /app/target/booklovers-0.0.1-SNAPSHOT.jar app.jar
 
+# Expose Spring Boot port
 EXPOSE 8080
 
+# Start the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
