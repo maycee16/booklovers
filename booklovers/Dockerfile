@@ -1,13 +1,27 @@
- 
+# ---------- Build Stage ----------
+FROM maven:3.9.9-eclipse-temurin-21 AS build
 
+WORKDIR /app
 
+COPY .mvn .mvn
+COPY mvnw .
+COPY mvnw.cmd .
+COPY pom.xml .
 
- FROM eclipse-temurin:21-jdk-alpine
+RUN chmod +x mvnw
+RUN ./mvnw dependency:go-offline
 
- WORKDIR /app
+COPY src ./src
 
- COPY target/booklovers-0.0.1-SNAPSHOT.jar app.jar
+RUN ./mvnw clean package -DskipTests
 
- EXPOSE 8080
+# ---------- Runtime Stage ----------
+FROM eclipse-temurin:21-jre
 
- ENTRYPOINT ["java", "-jar", "app.jar"]
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java","-jar","app.jar"]
